@@ -1,0 +1,14 @@
+fastapi>=0.112.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+python-multipart>=0.0.9
+SQLAlchemy>=2.0.30
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+celery>=5.3.6
+redis>=5.0.4
+langgraph>=0.2.30
+langchain-core>=0.2.38
+python-dotenv>=1.0.1
+structlog>=24.1.0
+descope>=1.0.0

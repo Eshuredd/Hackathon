@@ -1,0 +1,29 @@
+# Development Dockerfile for Next.js app (hot reload)
+FROM node:18-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173 3000
+CMD ["npm", "run", "dev"]
+
+# Development Dockerfile for Next.js frontend (hot reload)
+FROM node:18-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+ENV HOST=0.0.0.0
+EXPOSE 5173 3000
+
+# Default to the dev script; Next typically runs on 3000, but
+# the compose maps 5173, which is fine for Vite-like setups.
+CMD ["npm", "run", "dev"]
+
+
