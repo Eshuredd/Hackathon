@@ -23,6 +23,8 @@ export default function AuthNotice() {
       if (flag && onDashboard) {
         toast({
           title: "Descope Auth Key created",
+          variant: "auth",
+          duration: 2000,
         });
         localStorage.removeItem("descope_token_created");
       }
