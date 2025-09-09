@@ -174,7 +174,6 @@ class OverseerAgent:
         
         try:
             # Step 1: Deal Scout Agent - Price Aggregation
-            print("🔄 Overseer: Starting Deal Scout Agent...")
             scout_agent = DealScoutAgent(self._build_default_providers())
             price_results, scout_metrics = self._execute_with_monitoring(
                 "DealScoutAgent", 
@@ -182,10 +181,10 @@ class OverseerAgent:
                 query
             )
             agent_metrics.append(scout_metrics)
-            print(f"✅ Deal Scout completed in {scout_metrics.execution_time_ms:.2f}ms")
+            
             
             # Step 2: Cart Builder Agent - Cart Optimization
-            print("🔄 Overseer: Starting Cart Builder Agent...")
+            
             cart_agent = CartBuilderAgent()
             cart_plan, cart_metrics = self._execute_with_monitoring(
                 "CartBuilderAgent",
@@ -193,12 +192,11 @@ class OverseerAgent:
                 price_results.items
             )
             agent_metrics.append(cart_metrics)
-            print(f"✅ Cart Builder completed in {cart_metrics.execution_time_ms:.2f}ms")
+            
             
             # Step 3: Order Executor Agent - Checkout (if requested)
             final_order = None
             if checkout_request:
-                print("🔄 Overseer: Starting Order Executor Agent...")
                 executor_agent = OrderExecutorAgent()
                 checkout_request.items = cart_plan.options[cart_plan.best_option_index].items
                 checkout_request.provider = cart_plan.options[cart_plan.best_option_index].provider
@@ -208,7 +206,7 @@ class OverseerAgent:
                 required_role = check_grocery_delegation(order_value, "shopper")  # Default role
                 
                 if required_role and required_role != "shopper":
-                    print(f"⚠️ Delegation required: Order value ₹{order_value:.2f} needs {required_role} approval")
+                    pass
                     # In production, this would create an approval flow
                 
                 final_order, executor_metrics = self._execute_with_monitoring(
@@ -218,7 +216,6 @@ class OverseerAgent:
                     "shopper"  # Pass user role for delegation check
                 )
                 agent_metrics.append(executor_metrics)
-                print(f"✅ Order Executor completed in {executor_metrics.execution_time_ms:.2f}ms")
             
             # Calculate workflow metrics
             total_time = (datetime.utcnow() - workflow_start).total_seconds() * 1000
@@ -244,7 +241,6 @@ class OverseerAgent:
             self._update_workflow_history(workflow_result)
             self._update_agent_performance(agent_metrics)
             
-            print(f"🎉 Workflow completed successfully in {total_time:.2f}ms with ₹{cost_savings:.2f} savings!")
             return workflow_result
             
         except Exception as e:
@@ -259,7 +255,6 @@ class OverseerAgent:
             )
             
             self._update_workflow_history(workflow_result)
-            print(f"❌ Workflow failed after {total_time:.2f}ms: {str(e)}")
             return workflow_result
     
     def _update_workflow_history(self, workflow_result: WorkflowResult):

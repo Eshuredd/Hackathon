@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from ..security.dependencies import require_scopes
+from ..security.dependencies import require_scopes, get_user_id, get_optional_user_id
 from ..schemas.groceries import PriceQuery, PriceResult, CartPlan, CheckoutRequest, CheckoutResponse, GroceryItem
 from ..agents import DealScoutAgent, CartBuilderAgent, OrderExecutorAgent, OverseerAgent, MockProvider
 from ..agents.agent_b_cart_builder import (
@@ -42,17 +42,15 @@ def _get_cart(request: Request) -> dict:
 
 
 @router.get("/cart")
-async def get_cart(request: Request):
-    user_id = request.headers.get("X-User-Id", "demo")
+async def get_cart(request: Request, user_id: str = Depends(get_optional_user_id)):
     return cart_get(user_id)
 
 
 @router.post("/cart/items")
-async def add_or_update_cart_item(request: Request, payload: dict):
+async def add_or_update_cart_item(request: Request, payload: dict, user_id: str = Depends(get_optional_user_id)):
     """
     payload: { id, product, platform, price, delivery_fee, qty }
     """
-    user_id = request.headers.get("X-User-Id", "demo")
     # Minimal payload required: provider/item_name/unit_price/delivery_fee
     price_like = type("P", (), {})()
     setattr(price_like, "provider", payload.get("provider") or payload.get("platform"))
@@ -66,19 +64,17 @@ async def add_or_update_cart_item(request: Request, payload: dict):
 
 
 @router.delete("/cart/items/{item_id}")
-async def delete_cart_item(item_id: str, request: Request):
-    user_id = request.headers.get("X-User-Id", "demo")
+async def delete_cart_item(item_id: str, request: Request, user_id: str = Depends(get_optional_user_id)):
     return cart_remove(user_id, item_id)
 
 
 @router.delete("/cart")
-async def clear_cart(request: Request):
-    user_id = request.headers.get("X-User-Id", "demo")
+async def clear_cart(request: Request, user_id: str = Depends(get_optional_user_id)):
     return cart_clear(user_id)
 
 
 @router.post("/cart/parse-add")
-async def parse_and_add_to_cart(payload: dict, request: Request):
+async def parse_and_add_to_cart(payload: dict, request: Request, user_id: str = Depends(get_optional_user_id)):
     """
     Payload: { "text": "5 kg of rice and 2 liters of milk from instamart" }
     Uses GroceryTextParser to extract structured items and adds them to the global cart.
@@ -87,7 +83,6 @@ async def parse_and_add_to_cart(payload: dict, request: Request):
     text = payload.get("text", "")
     if not text:
         return {"items": [], "subtotal": 0, "delivery": 0, "total": 0}
-    user_id = request.headers.get("X-User-Id", "demo")
 
     # Infer provider from text in a very simple way (default if none found)
     provider = "instacart"
@@ -98,9 +93,7 @@ async def parse_and_add_to_cart(payload: dict, request: Request):
             break
 
     try:
-        print(f"DEBUG Router - About to call GroceryTextParser with: '{text}'")
         parsed = await GroceryTextParser(text)
-        print(f"DEBUG Router - GroceryTextParser returned: {parsed}")
         # Support both new shape { platform, items } and legacy [items]
         if isinstance(parsed, dict):
             platform = parsed.get("platform")
@@ -109,9 +102,7 @@ async def parse_and_add_to_cart(payload: dict, request: Request):
             items = parsed.get("items", [])
         else:
             items = parsed or []
-        print(f"DEBUG Router - Final items after processing: {items}")
     except Exception as e:
-        print(f"DEBUG Router - Exception in GroceryTextParser: {e}")
         # Fallback: simple regex-based parser
         items = []
         # normalize separators
@@ -145,36 +136,27 @@ async def parse_and_add_to_cart(payload: dict, request: Request):
         found_any_platform = False
         found_selected_platform = False
         try:
-            print(f"DEBUG Router - Creating GroceryItem for '{name}' with qty={qty}, unit={it.get('unit') or 'piece'}")
             scout = DealScoutAgent(build_default_providers())
             grocery_item = GroceryItem(name=name, quantity=qty, unit=(it.get("unit") or "piece"), category="general")
-            print(f"DEBUG Router - Created GroceryItem: {grocery_item}")
             q = PriceQuery(items=[grocery_item])
             res = scout.aggregate_prices(q)
-            print(f"DEBUG Router - Price lookup for '{name}': {res.items}")
             if res.items:
                 platforms = res.items[0].platforms
                 found_any_platform = len(platforms) > 0
-                print(f"DEBUG Router - Found {len(platforms)} platforms for '{name}': {[p.platform for p in platforms]}")
                 for plat in platforms:
                     if plat.platform == canonical_provider:
                         unit_price = float(plat.price)
                         delivery_fee = float(plat.delivery_fee or 0.0)
                         found_selected_platform = True
-                        print(f"DEBUG Router - Found price for '{name}' on {canonical_provider}: ₹{unit_price}")
                         break
         except Exception as e:
-            print(f"DEBUG Router - Exception in price lookup for '{name}': {e}")
-
-        print(f"DEBUG Router - Item '{name}': found_any_platform={found_any_platform}, found_selected_platform={found_selected_platform}, canonical_provider={canonical_provider}")
+            pass
 
         # Determine availability and decide whether to add to cart
         if not found_any_platform:
-            print(f"DEBUG Router - Adding '{name}' to unavailable_items (no platforms found)")
             unavailable_items.append(name)
             continue
         if not found_selected_platform:
-            print(f"DEBUG Router - Adding '{canonical_provider}' to unavailable_platforms (not found on selected platform)")
             unavailable_platforms.append(canonical_provider)
             continue
 
@@ -185,7 +167,6 @@ async def parse_and_add_to_cart(payload: dict, request: Request):
         setattr(price_like, "delivery_fee", delivery_fee)
         setattr(price_like, "delivery_eta_minutes", None)
         setattr(price_like, "metadata", {"parsed": True, "unit": it.get("unit")})
-        print(f"DEBUG Router - Adding '{name}' to cart: {qty} units at ₹{unit_price} each")
         cart_add_or_update(user_id, price_like, qty)
 
     response = cart_get(user_id)

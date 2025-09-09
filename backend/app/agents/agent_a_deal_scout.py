@@ -181,7 +181,6 @@ async def GroceryTextParser(grocery_text: str) -> Dict[str, Any]:
 
     Example:
         >>> items = await GroceryTextParser("1kg rice and 2 liters milk")
-        >>> print(items)
         {"platform": null, "items": [{"name": "rice", "quantity": 1, "unit": "kg"}, {"name": "milk", "quantity": 2, "unit": "liter"}]}
     """
     prompt = f"""
@@ -235,11 +234,6 @@ Respond ONLY as a strict JSON object in this schema:
         data["platform"] = None
     if "items" not in data:
         data["items"] = []
-    
-    # Debug statement to show what items are being returned
-    print(f"DEBUG GroceryTextParser - Input: '{grocery_text}'")
-    print(f"DEBUG GroceryTextParser - Extracted items: {data['items']}")
-    print(f"DEBUG GroceryTextParser - Platform: {data['platform']}")
     
     return data
 

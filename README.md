@@ -1,44 +1,94 @@
-# Smart Grocery – Full Setup Guide (Windows friendly)
+# Grocery Scout – AI-Powered Smart Grocery Assistant
 
-This guide takes you from cloning the repo to running the full product (backend + frontend). It includes environment setup, commands, and common troubleshooting.
+A multi-agent system that parses natural-language shopping requests, compares prices across providers, and builds the optimal cart for checkout.
 
-## Prerequisites
+## Team
 
-- Git
-- Python 3.11+
-- Node.js 18+ and npm
-- Docker Desktop (only if you want Redis via Docker or the Docker quickstart)
+- Team name: TODO – Add your team name
+- Members: TODO – Add member names (e.g., Alice Smith, Bob Lee, Carol Nguyen)
 
-## 1) Clone the repository
+## Hackathon Theme / Challenge
 
-```bash
-git clone https://github.com/<your-org-or-user>/<your-repo>.git
-cd Hackathon
-```
+- Theme: TODO – Select your hackathon theme
+- Challenge: TODO – Specify the challenge addressed
 
-## 2) Backend setup (FastAPI + Celery)
+## What We Built
 
-All commands below are run from the `backend/` directory unless noted.
+- Natural-language to cart: Users type requests like "2kg rice and 3L milk from Instamart" and the system extracts items, quantities, and preferred provider.
+- Deal scouting: Agents compare prices across supported providers and recommend the most cost-effective options.
+- Cart builder and executor: Builds a ready-to-checkout cart for the chosen provider.
+- Dashboard UI: A Next.js frontend with authentication, saved lists, recent searches, and comparison views.
 
-### 2.1 Create and activate virtualenv (Windows PowerShell)
+## How to Run
+
+Follow the steps below. These are Windows-friendly and mirror the detailed guide further down this file.
+
+### Backend (FastAPI + Celery)
+
+1. Create venv and install deps
 
 ```powershell
 cd backend
 python -m venv .venv
 . .venv\Scripts\Activate.ps1
-```
-
-### 2.2 Install dependencies
-
-```powershell
 pip install -r requirements.txt
 ```
 
-### 2.3 Create `.env` and configure
+2. Configure env
 
-Create `backend/.env` with the values you shared (edit keys as needed):
+Create `backend/.env` (see sample at `backend/README` section below or `env.example`), including:
+
+- `DATABASE_URL` (defaults to SQLite)
+- `REDIS_URL` and `BROKER_URL` (Redis)
+- `OPENAI_API_KEY`
+- Descope keys if using auth in backend
+
+3. Start Redis
+
+Ensure a local Redis server is running and listening on `localhost:6379`.
+
+4. Run API
+
+```powershell
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+5. (Optional) Start Celery worker
+
+```powershell
+celery -A app.celery_app.celery_app worker -l info
+```
+
+### Frontend (Next.js)
+
+1. Install deps
+
+```powershell
+cd ..\frontend
+npm install
+```
+
+2. Configure env
+
+Create `frontend/.env.local` containing:
+
+- `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
+- `NEXT_PUBLIC_DESCOPE_PROJECT_ID`, `NEXT_PUBLIC_DESCOPE_BASE_URL`
+
+3. Start dev server
+
+```powershell
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+## Environment files
+
+### Backend `.env`
 
 ```env
+# Environment Configuration
 ENV=development
 
 # Security
@@ -50,7 +100,7 @@ TOKEN_ALGORITHM=HS256
 # Database Configuration
 DATABASE_URL=sqlite:///./grocery_scout.db
 
-# Redis / Celery
+# Redis Configuration
 REDIS_URL=redis://localhost:6379/0
 BROKER_URL=redis://localhost:6379/1
 
@@ -59,71 +109,60 @@ DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=admin123
 
 # Descope Authentication
-DESCOPE_PROJECT_ID=P3214q4orBBo09emfASGJrh90szB
-DESCOPE_MANAGEMENT_KEY=
-DESCOPE_PUBLIC_KEY=
+DESCOPE_PROJECT_ID=your-descope-project-id
+DESCOPE_MANAGEMENT_KEY=your-descope-management-key
+DESCOPE_PUBLIC_KEY=your-descope-public-key
 
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
+OPENAI_API_KEY=your-openai-api-key
 
 # Frontend CORS Origins
 FRONTEND_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:8080
 ```
 
-### 2.4 Start Redis (option A: Docker)
+Place this file at `backend/.env`.
 
-```powershell
-docker run -d --name redis -p 6379:6379 redis:7
-```
-
-Option B: Use your local Redis if already installed and listening on `localhost:6379`.
-
-### 2.5 Run the API
-
-```powershell
-uvicorn app.main:app --reload --port 8000
-```
-
-API docs: `http://localhost:8000/docs`
-
-### 2.6 (Optional) Run the Celery worker (new terminal)
-
-```powershell
-cd backend
-. .venv\Scripts\Activate.ps1
-celery -A app.celery_app.celery_app worker -l info
-```
-
-## 3) Frontend setup (Next.js/React)
-
-All commands below are run from the `frontend/` directory.
-
-### 3.1 Install dependencies
-
-```powershell
-cd ..\frontend
-npm install
-```
-
-### 3.2 Create `.env.local`
-
-Create `frontend/.env.local` with your values:
+### Frontend `.env.local`
 
 ```env
-# Descope
-NEXT_PUBLIC_DESCOPE_PROJECT_ID=P3214q4orBBo09emfASGJrh90szB
+# Required: your Descope project ID (from Descope Console → Getting Started)
+NEXT_PUBLIC_DESCOPE_PROJECT_ID=your-descope-project-id
+
+# Optional: set only if you use a custom Descope base URL
+# Default is https://api.descope.com
 NEXT_PUBLIC_DESCOPE_BASE_URL=https://api.descope.com
 
-# Backend API base
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
 
-### 3.3 Run the frontend (dev)
+Place this file at `frontend/.env.local`.
 
-```powershell
-npm run dev
-```
+## Tech Stack
 
-Default dev URL: `http://localhost:3000`
+- Backend: FastAPI, Celery, Redis, SQLite (default), SQLAlchemy
+- AI/Agents: OpenAI, LangGraph/LangChain-style orchestration (multi-agent flow)
+- Auth: Descope (frontend SDK, optional backend verification)
+- Frontend: Next.js (React, TypeScript), Tailwind CSS, Radix UI
+- Infra/Dev: npm, Python 3.11+
+
+## Demo Video
+
+- TODO – Add demo link (YouTube/Drive). Example: https://youtu.be/your-demo-link
+
+## With More Time
+
+- Expand provider integrations and real checkout flows.
+- Add smarter substitution logic when items are unavailable.
+- Improve entity extraction with few-shot and structured output.
+- Add budgets, dietary preferences, and multi-user shared lists.
+- Strengthen observability and tracing for agent steps.
+
+---
+
+## Additional setup notes
+
+- API docs: `http://localhost:8000/docs`
+- Ensure Redis is running locally at `localhost:6379` before starting Celery.
+- Sample environment variables are shown above; see `env.example` for more.
 
 ## 4) End‑to‑end sanity checks
 
@@ -141,33 +180,14 @@ curl -X POST http://localhost:8000/grocery/cart/parse-add ^
   -d "{\"text\":\"2 kg rice and 3 liters milk from instamart\"}"
 ```
 
-## 5) Docker quickstart (optional)
-
-If you prefer Docker Compose for everything, see `README-Docker.md`. Minimal flow:
-
-```powershell
-# From repo root
-copy env.example .env  # update if needed
-docker-compose up -d --build
-```
-
-- Frontend: `http://localhost:3000` (or `5173` for dev profile)
-- Backend: `http://localhost:8000`
-
-## 6) Useful backend commands
+## 5) Useful backend commands
 
 ```powershell
 # Lint/tests (if configured)
 pytest -q
-
-# Start only Redis via Docker
-docker start redis
-
-# Stop services
-docker stop redis
 ```
 
-## 7) Troubleshooting
+## 6) Troubleshooting
 
 - Port already in use:
   - Backend: change `--port` or stop the conflicting process.
@@ -177,10 +197,9 @@ docker stop redis
 - Descope: verify `NEXT_PUBLIC_DESCOPE_PROJECT_ID` and (optional) backend Descope keys.
 - OpenAI: set a valid `OPENAI_API_KEY` in `backend/.env`.
 
-## 8) Project structure (high level)
+## 7) Project structure (high level)
 
 - `backend/`: FastAPI app (`app/`), Celery worker, SQLite DB by default
 - `frontend/`: Next.js app
-- `README-Docker.md`: Full Docker Compose workflow
 
 That’s it—after completing steps 1–3, you should have both API and UI running locally.

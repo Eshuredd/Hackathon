@@ -63,13 +63,26 @@ export async function fetchComparisonRows(
 }
 
 // ----------------- Cart API -----------------
-const jsonHeaders = {
-  "Content-Type": "application/json",
-  "X-User-Id": "demo",
-};
+function getJsonHeaders() {
+  let authHeader: string | undefined;
+  try {
+    if (typeof window !== "undefined") {
+      const ds =
+        localStorage.getItem("DS") || localStorage.getItem("auth-token");
+      if (ds) authHeader = `Bearer ${ds}`;
+    }
+  } catch {}
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (authHeader) headers["Authorization"] = authHeader;
+  return headers;
+}
 
 export async function cartGet() {
-  const r = await fetch(`${API_BASE}/grocery/cart`, { headers: jsonHeaders });
+  const r = await fetch(`${API_BASE}/grocery/cart`, {
+    headers: getJsonHeaders(),
+  });
   if (!r.ok) throw new Error("cartGet failed");
   return r.json();
 }
@@ -84,7 +97,7 @@ export async function cartAddOrUpdate(params: {
 }) {
   const r = await fetch(`${API_BASE}/grocery/cart/items`, {
     method: "POST",
-    headers: jsonHeaders,
+    headers: getJsonHeaders(),
     body: JSON.stringify(params),
   });
   if (!r.ok) throw new Error("cartAddOrUpdate failed");
@@ -96,7 +109,7 @@ export async function cartRemove(lineId: string) {
     `${API_BASE}/grocery/cart/items/${encodeURIComponent(lineId)}`,
     {
       method: "DELETE",
-      headers: jsonHeaders,
+      headers: getJsonHeaders(),
     }
   );
   if (!r.ok) throw new Error("cartRemove failed");
@@ -106,7 +119,7 @@ export async function cartRemove(lineId: string) {
 export async function cartClear() {
   const r = await fetch(`${API_BASE}/grocery/cart`, {
     method: "DELETE",
-    headers: jsonHeaders,
+    headers: getJsonHeaders(),
   });
   if (!r.ok) throw new Error("cartClear failed");
   return r.json();
@@ -115,7 +128,7 @@ export async function cartClear() {
 export async function cartParseAdd(text: string) {
   const r = await fetch(`${API_BASE}/grocery/cart/parse-add`, {
     method: "POST",
-    headers: jsonHeaders,
+    headers: getJsonHeaders(),
     body: JSON.stringify({ text }),
   });
   if (!r.ok) throw new Error("cartParseAdd failed");

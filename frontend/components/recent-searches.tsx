@@ -1,8 +1,8 @@
-"use client"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Clock, Search, RotateCcw } from "lucide-react"
+"use client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Clock, Search, RotateCcw } from "lucide-react";
 
 const recentSearches = [
   {
@@ -26,13 +26,12 @@ const recentSearches = [
     savings: "₹80",
     items: 8,
   },
-]
+];
 
 export function RecentSearches() {
   const handleRepeatSearch = (query: string) => {
-    console.log("Repeating search:", query)
-    window.location.href = `/comparison?q=${encodeURIComponent(query)}`
-  }
+    window.location.href = `/comparison?q=${encodeURIComponent(query)}`;
+  };
 
   return (
     <section className="space-y-6">
@@ -48,7 +47,10 @@ export function RecentSearches() {
 
       <div className="grid gap-4">
         {recentSearches.map((search) => (
-          <Card key={search.id} className="glass hover:scale-[1.02] transition-transform duration-200">
+          <Card
+            key={search.id}
+            className="glass hover:scale-[1.02] transition-transform duration-200"
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1 space-y-2">
@@ -60,15 +62,25 @@ export function RecentSearches() {
                   </div>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <span>{search.timestamp}</span>
-                    <span className="text-primary font-medium">Saved {search.savings}</span>
+                    <span className="text-primary font-medium">
+                      Saved {search.savings}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" className="glass border-0 bg-transparent">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass border-0 bg-transparent"
+                  >
                     <Search className="w-4 h-4 mr-2" />
                     View Results
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleRepeatSearch(search.query)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRepeatSearch(search.query)}
+                  >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Repeat
                   </Button>
@@ -79,5 +91,5 @@ export function RecentSearches() {
         ))}
       </div>
     </section>
-  )
+  );
 }

@@ -1,26 +1,87 @@
-"use client"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { User, Mail, Phone, MapPin, Edit, Save, Camera, Shield } from "lucide-react"
+"use client";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Edit,
+  Save,
+  Camera,
+  Shield,
+} from "lucide-react";
 
 export function AccountInfo() {
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
     phone: "+91 98765 43210",
     address: "123 Main Street, Mumbai, Maharashtra 400001",
-  })
+  });
+
+  // Hydrate from Descope/local storage
+  useEffect(() => {
+    try {
+      let tokenPayload: any | undefined;
+      const token =
+        (typeof window !== "undefined" &&
+          (localStorage.getItem("DS") || localStorage.getItem("auth-token"))) ||
+        undefined;
+      if (token && token.split(".").length === 3) {
+        try {
+          const payload = token
+            .split(".")[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+          tokenPayload = JSON.parse(atob(payload));
+        } catch {}
+      }
+
+      const displayName =
+        (tokenPayload?.name as string) ||
+        (typeof window !== "undefined" &&
+          localStorage.getItem("dls_last_user_display_name")) ||
+        undefined;
+      let emailFromStores: string | undefined = tokenPayload?.email as string;
+      if (!emailFromStores) {
+        try {
+          const raw =
+            typeof window !== "undefined" &&
+            localStorage.getItem("dls_last_auth");
+          if (raw) {
+            const obj = JSON.parse(raw as string);
+            const maybeEmail = obj?.user?.email || obj?.email || obj?.loginId;
+            if (typeof maybeEmail === "string" && maybeEmail.includes("@"))
+              emailFromStores = maybeEmail;
+          }
+        } catch {}
+      }
+      if (!emailFromStores) {
+        const loginId =
+          typeof window !== "undefined" &&
+          localStorage.getItem("dls_last_user_login_id");
+        if (typeof loginId === "string" && loginId.includes("@"))
+          emailFromStores = loginId;
+      }
+
+      setUserInfo((prev) => ({
+        ...prev,
+        name: displayName || prev.name,
+        email: emailFromStores || prev.email,
+      }));
+    } catch {}
+  }, []);
 
   const handleSave = () => {
-    console.log("Saving user info:", userInfo)
-    setIsEditing(false)
-  }
+    setIsEditing(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -32,11 +93,13 @@ export function AccountInfo() {
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-6">
             <div className="relative">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src="/placeholder.svg?key=profile" alt="Profile" />
-                <AvatarFallback className="text-2xl">JD</AvatarFallback>
-              </Avatar>
-              <Button size="sm" className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0">
+              <div className="w-24 h-24 rounded-full bg-secondary/60 text-foreground inline-flex items-center justify-center">
+                <User className="w-10 h-10" />
+              </div>
+              <Button
+                size="sm"
+                className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
+              >
                 <Camera className="w-4 h-4" />
               </Button>
             </div>
@@ -87,7 +150,9 @@ export function AccountInfo() {
               <Input
                 id="name"
                 value={userInfo.name}
-                onChange={(e) => setUserInfo((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setUserInfo((prev) => ({ ...prev, name: e.target.value }))
+                }
                 disabled={!isEditing}
                 className="glass border-0"
               />
@@ -102,7 +167,9 @@ export function AccountInfo() {
                 id="email"
                 type="email"
                 value={userInfo.email}
-                onChange={(e) => setUserInfo((prev) => ({ ...prev, email: e.target.value }))}
+                onChange={(e) =>
+                  setUserInfo((prev) => ({ ...prev, email: e.target.value }))
+                }
                 disabled={!isEditing}
                 className="glass border-0"
               />
@@ -117,7 +184,9 @@ export function AccountInfo() {
                 id="phone"
                 type="tel"
                 value={userInfo.phone}
-                onChange={(e) => setUserInfo((prev) => ({ ...prev, phone: e.target.value }))}
+                onChange={(e) =>
+                  setUserInfo((prev) => ({ ...prev, phone: e.target.value }))
+                }
                 disabled={!isEditing}
                 className="glass border-0"
               />
@@ -131,7 +200,9 @@ export function AccountInfo() {
               <Input
                 id="address"
                 value={userInfo.address}
-                onChange={(e) => setUserInfo((prev) => ({ ...prev, address: e.target.value }))}
+                onChange={(e) =>
+                  setUserInfo((prev) => ({ ...prev, address: e.target.value }))
+                }
                 disabled={!isEditing}
                 className="glass border-0"
               />
@@ -163,5 +234,5 @@ export function AccountInfo() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

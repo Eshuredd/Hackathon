@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { ComparisonTable } from "@/components/comparison-table";
 import { CartSummary } from "@/components/cart-summary";
-import { ShoppingCart, Filter, SortAsc, Zap } from "lucide-react";
+import { ShoppingCart, Filter, SortAsc, Zap, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import {
   fetchComparisonRows,
@@ -48,6 +48,7 @@ export function ComparisonResults() {
     subtotal: 0,
     delivery: 0,
   });
+  const [footerVisible, setFooterVisible] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -444,7 +445,7 @@ export function ComparisonResults() {
       </main>
 
       {/* Sticky Footer */}
-      {selectedItems.length > 0 && (
+      {selectedItems.length > 0 && footerVisible && (
         <div className="fixed bottom-0 left-0 right-0 z-50 glass-strong border-t p-4">
           <div className="container mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -457,9 +458,19 @@ export function ComparisonResults() {
                 ₹{totalAmount.toFixed(2)}
               </span>
             </div>
-            <Button size="lg" className="px-8">
-              Proceed to Checkout
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="lg" className="px-8">
+                Proceed to Checkout
+              </Button>
+              <button
+                type="button"
+                aria-label="Close"
+                className="mr-2 h-10 w-10 inline-flex items-center justify-center rounded-md bg-transparent hover:bg-secondary/20 transition-colors"
+                onClick={() => setFooterVisible(false)}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}

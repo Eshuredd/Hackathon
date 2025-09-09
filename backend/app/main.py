@@ -9,8 +9,7 @@ from .routers import groceries as grocery_router
 
 app = FastAPI(title="Grocery Deal Scout Backend", version="0.1.0")
 
-# Debug: Print the allowed origins
-print(f"DEBUG: Allowed CORS origins: {settings.frontend_origins}")
+
 
 app.add_middleware(
     CORSMiddleware,

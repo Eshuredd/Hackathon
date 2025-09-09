@@ -23,12 +23,20 @@ export default function DescopeAuth(): JSX.Element {
       <Descope
         flowId="sign-up-or-in"
         theme="light"
-        onSuccess={() => {
+        onSuccess={(e?: any) => {
+          try {
+            if (typeof window !== "undefined") {
+              localStorage.setItem("descope_token_created", "1");
+              const userId =
+                e?.detail?.user?.id || e?.user?.id || e?.data?.user?.id;
+              if (userId) {
+                localStorage.setItem("descope_user_id", userId);
+              }
+            }
+          } catch {}
           router.push("/dashboard");
         }}
-        onError={(err) => {
-          // console.error("Descope error", err);
-        }}
+        onError={(err) => {}}
       />
     </AuthProvider>
   );

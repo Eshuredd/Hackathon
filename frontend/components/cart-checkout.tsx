@@ -1,14 +1,23 @@
-"use client"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { CreditCard, Truck, MapPin, Gift, Shield, CheckCircle, Loader2, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { DashboardHeader } from "@/components/dashboard-header";
+import {
+  CreditCard,
+  Truck,
+  MapPin,
+  Gift,
+  Shield,
+  CheckCircle,
+  Loader2,
+  ArrowLeft,
+} from "lucide-react";
+import Link from "next/link";
 
 const mockCartItems = [
   {
@@ -38,34 +47,35 @@ const mockCartItems = [
     image: "/placeholder.svg?key=eggs1",
     quantity: 1,
   },
-]
+];
 
 export function CartCheckout() {
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [orderComplete, setOrderComplete] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
 
-  const subtotal = mockCartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const subtotal = mockCartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
   const savings = mockCartItems.reduce((total, item) => {
     if (item.originalPrice) {
-      return total + (item.originalPrice - item.price) * item.quantity
+      return total + (item.originalPrice - item.price) * item.quantity;
     }
-    return total
-  }, 0)
+    return total;
+  }, 0);
 
   const handleCheckout = async () => {
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     // Simulate API call to POST /order/create/
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      console.log("Order created successfully")
-      setOrderComplete(true)
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      setOrderComplete(true);
     } catch (error) {
-      console.error("Checkout error:", error)
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   if (orderComplete) {
     return (
@@ -79,8 +89,12 @@ export function CartCheckout() {
             </div>
 
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold font-sans text-primary">Order Confirmed!</h1>
-              <p className="text-xl text-muted-foreground">Your grocery order has been placed successfully</p>
+              <h1 className="text-4xl font-bold font-sans text-primary">
+                Order Confirmed!
+              </h1>
+              <p className="text-xl text-muted-foreground">
+                Your grocery order has been placed successfully
+              </p>
             </div>
 
             <Card className="glass-strong p-8">
@@ -94,7 +108,9 @@ export function CartCheckout() {
                   <span className="font-bold text-lg">₹{subtotal}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Estimated Delivery</span>
+                  <span className="text-muted-foreground">
+                    Estimated Delivery
+                  </span>
                   <span className="text-primary font-medium">2-4 hours</span>
                 </div>
               </div>
@@ -105,7 +121,11 @@ export function CartCheckout() {
                 Track Order
               </Button>
               <Link href="/dashboard">
-                <Button variant="outline" size="lg" className="px-8 glass border-0 bg-transparent">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="px-8 glass border-0 bg-transparent"
+                >
                   Continue Shopping
                 </Button>
               </Link>
@@ -113,7 +133,7 @@ export function CartCheckout() {
           </div>
         </main>
       </div>
-    )
+    );
   }
 
   return (
@@ -131,7 +151,9 @@ export function CartCheckout() {
             Back to Comparison
           </Link>
           <h1 className="text-3xl font-bold font-sans">Secure Checkout</h1>
-          <p className="text-muted-foreground">Review your order and complete your purchase</p>
+          <p className="text-muted-foreground">
+            Review your order and complete your purchase
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -149,29 +171,53 @@ export function CartCheckout() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" className="glass border-0" />
+                    <Input
+                      id="firstName"
+                      placeholder="John"
+                      className="glass border-0"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" className="glass border-0" />
+                    <Input
+                      id="lastName"
+                      placeholder="Doe"
+                      className="glass border-0"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123 Main Street" className="glass border-0" />
+                  <Input
+                    id="address"
+                    placeholder="123 Main Street"
+                    className="glass border-0"
+                  />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="Mumbai" className="glass border-0" />
+                    <Input
+                      id="city"
+                      placeholder="Mumbai"
+                      className="glass border-0"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">State</Label>
-                    <Input id="state" placeholder="Maharashtra" className="glass border-0" />
+                    <Input
+                      id="state"
+                      placeholder="Maharashtra"
+                      className="glass border-0"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pincode">Pincode</Label>
-                    <Input id="pincode" placeholder="400001" className="glass border-0" />
+                    <Input
+                      id="pincode"
+                      placeholder="400001"
+                      className="glass border-0"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -188,16 +234,28 @@ export function CartCheckout() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" className="glass border-0" />
+                  <Input
+                    id="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    className="glass border-0"
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="expiry">Expiry Date</Label>
-                    <Input id="expiry" placeholder="MM/YY" className="glass border-0" />
+                    <Input
+                      id="expiry"
+                      placeholder="MM/YY"
+                      className="glass border-0"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="cvv">CVV</Label>
-                    <Input id="cvv" placeholder="123" className="glass border-0" />
+                    <Input
+                      id="cvv"
+                      placeholder="123"
+                      className="glass border-0"
+                    />
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -225,13 +283,19 @@ export function CartCheckout() {
                         className="w-12 h-12 object-cover rounded"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{item.product}</p>
-                        <p className="text-xs text-muted-foreground">{item.platform}</p>
+                        <p className="font-medium text-sm truncate">
+                          {item.product}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.platform}
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-sm">₹{item.price}</p>
                         {item.originalPrice && (
-                          <p className="text-xs text-muted-foreground line-through">₹{item.originalPrice}</p>
+                          <p className="text-xs text-muted-foreground line-through">
+                            ₹{item.originalPrice}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -255,7 +319,9 @@ export function CartCheckout() {
                 <div className="flex items-center justify-between p-3 glass rounded-lg">
                   <div className="flex items-center space-x-2">
                     <Truck className="w-4 h-4 text-accent" />
-                    <span className="text-sm font-medium">Express Delivery</span>
+                    <span className="text-sm font-medium">
+                      Express Delivery
+                    </span>
                   </div>
                   <Badge variant="secondary" className="glass">
                     Free
@@ -280,7 +346,12 @@ export function CartCheckout() {
                 </div>
 
                 {/* Checkout Button */}
-                <Button className="w-full" size="lg" onClick={handleCheckout} disabled={isProcessing}>
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={handleCheckout}
+                  disabled={isProcessing}
+                >
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -299,5 +370,5 @@ export function CartCheckout() {
         </div>
       </main>
     </div>
-  )
+  );
 }

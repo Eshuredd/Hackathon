@@ -1,113 +1,92 @@
-"use client"
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Package, Calendar, Search, Download, RotateCcw, MapPin, Clock, CheckCircle, Truck } from "lucide-react"
+"use client";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+  Package,
+  Calendar,
+  Search,
+  Download,
+  RotateCcw,
+  MapPin,
+  Clock,
+  CheckCircle,
+  Truck,
+} from "lucide-react";
 
-const mockOrderHistory = [
-  {
-    id: "SG-2024-047",
-    date: "2024-01-20",
-    status: "delivered",
-    platform: "BigBasket",
-    items: ["Milk", "Bread", "Eggs"],
-    total: 165,
-    savings: 25,
-    deliveryAddress: "123 Main Street, Mumbai",
-    deliveredAt: "2024-01-20T14:30:00Z",
-  },
-  {
-    id: "SG-2024-046",
-    date: "2024-01-18",
-    status: "delivered",
-    platform: "Amazon Fresh",
-    items: ["Rice", "Oil", "Sugar", "Onions"],
-    total: 450,
-    savings: 80,
-    deliveryAddress: "123 Main Street, Mumbai",
-    deliveredAt: "2024-01-18T16:45:00Z",
-  },
-  {
-    id: "SG-2024-045",
-    date: "2024-01-15",
-    status: "delivered",
-    platform: "Flipkart",
-    items: ["Fruits", "Vegetables"],
-    total: 320,
-    savings: 45,
-    deliveryAddress: "123 Main Street, Mumbai",
-    deliveredAt: "2024-01-15T11:20:00Z",
-  },
-  {
-    id: "SG-2024-044",
-    date: "2024-01-12",
-    status: "cancelled",
-    platform: "BigBasket",
-    items: ["Dairy Products"],
-    total: 280,
-    savings: 0,
-    deliveryAddress: "123 Main Street, Mumbai",
-  },
-]
+// Remove mock data; default to empty list until real backend is wired
+const mockOrderHistory: Array<{
+  id: string;
+  date: string;
+  status: string;
+  platform: string;
+  items: string[];
+  total: number;
+  savings: number;
+  deliveryAddress?: string;
+  deliveredAt?: string;
+}> = [];
 
 export function OrderHistory() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredOrders = mockOrderHistory.filter(
     (order) =>
       order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.platform.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.items.some((item) => item.toLowerCase().includes(searchQuery.toLowerCase())),
-  )
+      order.items.some((item) =>
+        item.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
-        return "bg-green-500"
+        return "bg-green-500";
       case "processing":
-        return "bg-blue-500"
+        return "bg-blue-500";
       case "shipped":
-        return "bg-yellow-500"
+        return "bg-yellow-500";
       case "cancelled":
-        return "bg-red-500"
+        return "bg-red-500";
       default:
-        return "bg-gray-500"
+        return "bg-gray-500";
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "delivered":
-        return <CheckCircle className="w-4 h-4" />
+        return <CheckCircle className="w-4 h-4" />;
       case "processing":
-        return <Clock className="w-4 h-4" />
+        return <Clock className="w-4 h-4" />;
       case "shipped":
-        return <Truck className="w-4 h-4" />
+        return <Truck className="w-4 h-4" />;
       default:
-        return <Package className="w-4 h-4" />
+        return <Package className="w-4 h-4" />;
     }
-  }
+  };
 
   const getPlatformLogo = (platform: string) => {
     const logos = {
       BigBasket: "🛒",
       "Amazon Fresh": "📦",
       Flipkart: "🛍️",
-    }
-    return logos[platform as keyof typeof logos] || "🏪"
-  }
+    };
+    return logos[platform as keyof typeof logos] || "🏪";
+  };
 
   const getPlatformColor = (platform: string) => {
     const colors = {
       BigBasket: "bg-green-500",
       "Amazon Fresh": "bg-orange-500",
       Flipkart: "bg-blue-500",
-    }
-    return colors[platform as keyof typeof colors] || "bg-gray-500"
-  }
+    };
+    return colors[platform as keyof typeof colors] || "bg-gray-500";
+  };
 
   return (
     <div className="space-y-6">
@@ -115,7 +94,9 @@ export function OrderHistory() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold font-sans">Order History</h2>
-          <p className="text-muted-foreground">Track your past orders and reorder your favorites</p>
+          <p className="text-muted-foreground">
+            Track your past orders and reorder your favorites
+          </p>
         </div>
         <Button variant="outline" className="glass border-0 bg-transparent">
           <Download className="w-4 h-4 mr-2" />
@@ -148,7 +129,9 @@ export function OrderHistory() {
               </div>
               <h3 className="font-semibold mb-2">No orders found</h3>
               <p className="text-muted-foreground">
-                {searchQuery ? "Try adjusting your search terms" : "You haven't placed any orders yet"}
+                {searchQuery
+                  ? "Try adjusting your search terms"
+                  : "You haven't placed any orders yet"}
               </p>
             </CardContent>
           </Card>
@@ -158,10 +141,15 @@ export function OrderHistory() {
             <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
 
             {filteredOrders.map((order, index) => (
-              <div key={order.id} className="relative flex items-start space-x-6 pb-8">
+              <div
+                key={order.id}
+                className="relative flex items-start space-x-6 pb-8"
+              >
                 {/* Timeline Node */}
                 <div
-                  className={`relative z-10 w-16 h-16 ${getStatusColor(order.status)} rounded-full flex items-center justify-center text-white`}
+                  className={`relative z-10 w-16 h-16 ${getStatusColor(
+                    order.status
+                  )} rounded-full flex items-center justify-center text-white`}
                 >
                   {getStatusIcon(order.status)}
                 </div>
@@ -172,15 +160,21 @@ export function OrderHistory() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div>
-                          <CardTitle className="text-lg">Order {order.id}</CardTitle>
+                          <CardTitle className="text-lg">
+                            Order {order.id}
+                          </CardTitle>
                           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(order.date).toLocaleDateString()}</span>
+                            <span>
+                              {new Date(order.date).toLocaleDateString()}
+                            </span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
                           <div
-                            className={`w-8 h-8 ${getPlatformColor(order.platform)} rounded-full flex items-center justify-center text-white text-sm`}
+                            className={`w-8 h-8 ${getPlatformColor(
+                              order.platform
+                            )} rounded-full flex items-center justify-center text-white text-sm`}
                           >
                             {getPlatformLogo(order.platform)}
                           </div>
@@ -192,8 +186,8 @@ export function OrderHistory() {
                           order.status === "delivered"
                             ? "default"
                             : order.status === "cancelled"
-                              ? "destructive"
-                              : "secondary"
+                            ? "destructive"
+                            : "secondary"
                         }
                         className="capitalize"
                       >
@@ -205,10 +199,16 @@ export function OrderHistory() {
                   <CardContent className="space-y-4">
                     {/* Items */}
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">Items</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Items
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {order.items.map((item, itemIndex) => (
-                          <Badge key={itemIndex} variant="secondary" className="glass">
+                          <Badge
+                            key={itemIndex}
+                            variant="secondary"
+                            className="glass"
+                          >
                             {item}
                           </Badge>
                         ))}
@@ -221,7 +221,9 @@ export function OrderHistory() {
                         <MapPin className="w-4 h-4" />
                         <span>Delivered to {order.deliveryAddress}</span>
                         <span>•</span>
-                        <span>{new Date(order.deliveredAt).toLocaleString()}</span>
+                        <span>
+                          {new Date(order.deliveredAt).toLocaleString()}
+                        </span>
                       </div>
                     )}
 
@@ -231,9 +233,14 @@ export function OrderHistory() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center space-x-4">
-                          <span className="text-lg font-bold">₹{order.total}</span>
+                          <span className="text-lg font-bold">
+                            ₹{order.total}
+                          </span>
                           {order.savings > 0 && (
-                            <Badge variant="secondary" className="glass text-primary">
+                            <Badge
+                              variant="secondary"
+                              className="glass text-primary"
+                            >
                               Saved ₹{order.savings}
                             </Badge>
                           )}
@@ -242,7 +249,11 @@ export function OrderHistory() {
 
                       <div className="flex items-center space-x-2">
                         {order.status === "delivered" && (
-                          <Button variant="outline" size="sm" className="glass border-0 bg-transparent">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="glass border-0 bg-transparent"
+                          >
                             <RotateCcw className="w-4 h-4 mr-2" />
                             Reorder
                           </Button>
@@ -260,5 +271,5 @@ export function OrderHistory() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -66,10 +66,8 @@ export function AuthForm({ mode }: AuthFormProps) {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Mock successful response
-      console.log(`${mode} successful with:`, payload);
       navigate("/home");
     } catch (error) {
-      console.error("Auth error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -80,10 +78,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     try {
       // Simulate OTP API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("OTP sent to:", phoneForm.phone);
       setPhoneForm((prev) => ({ ...prev, otpSent: true }));
     } catch (error) {
-      console.error("OTP error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -96,10 +92,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     try {
       // Simulate OTP verification
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("OTP verified:", phoneForm.otp);
       navigate("/home");
     } catch (error) {
-      console.error("OTP verification error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -375,5 +369,3 @@ export function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
-
-

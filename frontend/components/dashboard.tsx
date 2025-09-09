@@ -26,10 +26,19 @@ export function Dashboard() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [addedItems, setAddedItems] = useState<any[]>([]);
   const [availablePlatforms, setAvailablePlatforms] = useState<string[]>([]);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorItems, setErrorItems] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Auto-close error popup after 4 seconds
+  useEffect(() => {
+    if (!showErrorPopup) return;
+    const t = setTimeout(() => setShowErrorPopup(false), 4000);
+    return () => clearTimeout(t);
+  }, [showErrorPopup]);
   const { toast } = useToast();
 
   const handleSearch = (query: string) => {
-    console.log("Searching for:", query);
     // Navigate to comparison results
     window.location.href = `/comparison?q=${encodeURIComponent(query)}`;
   };
@@ -74,6 +83,21 @@ export function Dashboard() {
         });
       }
 
+      // If nothing was added, show a helpful popup
+      if (items.length === 0) {
+        if ((unavailableItems?.length || 0) > 0) {
+          setErrorItems(unavailableItems);
+          setErrorMessage("not found on any platform");
+          setShowErrorPopup(true);
+        } else {
+          setErrorItems([]);
+          setErrorMessage(
+            "We couldn't detect any grocery item. Try '2 kg rice' or '1 liter milk'."
+          );
+          setShowErrorPopup(true);
+        }
+      }
+
       // Show success popup with added items and platforms
       if (items.length > 0) {
         setAddedItems(items);
@@ -89,7 +113,6 @@ export function Dashboard() {
       setNlText("");
       await refreshCartBar();
     } catch (e) {
-      console.error("cartParseAdd failed", e);
       alert("Couldn't add items. Please try again.");
     } finally {
       setAdding(false);
@@ -134,7 +157,7 @@ export function Dashboard() {
             />
             <button
               type="button"
-              className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground"
+              className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground cursor-pointer hover:opacity-90"
               onClick={handleParseAdd}
               disabled={adding}
             >
@@ -242,35 +265,7 @@ export function Dashboard() {
           </div>
         </section>
 
-        {/* Quick Stats */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <Card className="glass text-center p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="font-bold text-xl mb-2">Average Savings</h3>
-            <p className="text-3xl font-bold text-primary">₹247</p>
-            <p className="text-base text-muted-foreground">per shopping trip</p>
-          </Card>
-
-          <Card className="glass text-center p-6">
-            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-6 h-6 text-accent" />
-            </div>
-            <h3 className="font-bold text-xl mb-2">Time Saved</h3>
-            <p className="text-3xl font-bold text-accent">45 min</p>
-            <p className="text-base text-muted-foreground">per week</p>
-          </Card>
-
-          <Card className="glass text-center p-6">
-            <div className="w-12 h-12 bg-secondary/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <ShoppingCart className="w-6 h-6 text-foreground" />
-            </div>
-            <h3 className="font-bold text-xl mb-2">Orders Completed</h3>
-            <p className="text-3xl font-bold text-foreground">12</p>
-            <p className="text-base text-muted-foreground">this month</p>
-          </Card>
-        </section>
+        {/* Quick Stats removed: placeholder KPIs hidden until real data is available */}
 
         {/* Recent Searches */}
         <RecentSearches />
@@ -339,6 +334,53 @@ export function Dashboard() {
         </div>
       )}
 
+      {/* Error Popup */}
+      {showErrorPopup && (
+        <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-red-500 p-4 max-w-md mx-auto">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                  !
+                </span>
+                <h3 className="font-semibold text-lg">
+                  Item could not be added
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowErrorPopup(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {errorItems.length > 0 ? (
+              <div className="mb-3">
+                <h4 className="font-medium text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Not found:
+                </h4>
+                <div className="space-y-1">
+                  {errorItems.map((name, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <span className="capitalize">{name}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {errorMessage}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground mb-2">
+                {errorMessage}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Bottom cart bar */}
       {cartCount > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-40 glass-strong border-t p-4">
@@ -354,7 +396,7 @@ export function Dashboard() {
               </span>
             </div>
             <button
-              className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground"
+              className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground cursor-pointer hover:opacity-90"
               onClick={() => (window.location.href = "/cart")}
             >
               View Cart
