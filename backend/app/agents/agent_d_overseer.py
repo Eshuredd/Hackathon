@@ -237,7 +237,7 @@ class OverseerAgent:
                 errors=errors
             )
             
-            # Update workflow history and stats
+            # Record this workflow run for tracking
             self._update_workflow_history(workflow_result)
             self._update_agent_performance(agent_metrics)
             
@@ -274,7 +274,7 @@ class OverseerAgent:
         else:
             self.workflow_stats["failed_workflows"] += 1
         
-        # Update average execution time
+        # Calculate average execution time across all workflows
         total_time = sum(w["execution_time_ms"] for w in self.workflow_history)
         self.workflow_stats["avg_execution_time"] = total_time / len(self.workflow_history)
     

@@ -32,7 +32,7 @@ class CartBuilderAgent:
             )
 
         # Strategy 2: Split across two cheapest providers per item (approximation)
-        # This is a heuristic to demonstrate mixed carts
+        # Using a simple approach to show how mixed carts could work
         cheapest_by_item: Dict[str, ProviderPrice] = {}
         for p in prices:
             key = f"{p.item_name}"

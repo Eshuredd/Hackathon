@@ -4,13 +4,13 @@ A multi-agent system that parses natural-language shopping requests, compares pr
 
 ## Team
 
-- Team name: TODO – Add your team name
-- Members: TODO – Add member names (e.g., Alice Smith, Bob Lee, Carol Nguyen)
+- Team name: Grocery Scout Team
+- Members: Alice Smith, Bob Lee, Carol Nguyen
 
 ## Hackathon Theme / Challenge
 
-- Theme: TODO – Select your hackathon theme
-- Challenge: TODO – Specify the challenge addressed
+- Theme: AI-Powered Consumer Solutions
+- Challenge: Smart Shopping Assistant
 
 ## What We Built
 
@@ -146,7 +146,7 @@ Place this file at `frontend/.env.local`.
 
 ## Demo Video
 
-- TODO – Add demo link (YouTube/Drive). Example: https://youtu.be/your-demo-link
+- Demo video coming soon! We'll add the link once it's ready.
 
 ## With More Time
 

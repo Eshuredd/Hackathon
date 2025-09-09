@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from langgraph.graph import StateGraph, END
 
-# This is a thin orchestrator; heavy lifting happens in Celery tasks.
+# Simple workflow coordinator - the real work gets done in background tasks
 # Grocery pipeline: scout -> cart -> checkout
 
 

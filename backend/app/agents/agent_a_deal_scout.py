@@ -273,7 +273,7 @@ class MockProvider:
         strategy = PLATFORM_STRATEGIES.get(self.provider_name, PLATFORM_STRATEGIES["amazon_fresh"])
         min_discount, max_discount = strategy["discount_range"]
         
-        # Create deterministic but varied discount based on item name
+        # Generate consistent but varied discounts using item name as seed
         item_hash = int(hashlib.md5(item_name.encode()).hexdigest()[:8], 16)
         discount_percent = min_discount + (item_hash % (max_discount - min_discount + 1))
         
@@ -288,7 +288,7 @@ class MockProvider:
         """Get delivery fee and ETA for the platform"""
         strategy = PLATFORM_STRATEGIES.get(self.provider_name, PLATFORM_STRATEGIES["amazon_fresh"])
         
-        # Add some randomness to delivery times
+        # Vary delivery times to make them more realistic
         eta_min, eta_max = strategy["eta_min"], strategy["eta_max"]
         eta = random.randint(eta_min, eta_max)
         
@@ -421,7 +421,7 @@ class DealScoutAgent:
                     platform_totals[price.provider] = 0
                 platform_totals[price.provider] += price.unit_price
             
-            # Create result item
+            # Build the price result for this item
             result_item = PriceResultItem(
                 name=item.name,
                 category=item.category or "General",

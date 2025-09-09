@@ -50,7 +50,7 @@ class GroceryDeal(Base):
     stock_available = Column(Boolean, default=True)
     delivery_time = Column(Integer, nullable=True)  # in minutes
     deal_type = Column(String, nullable=True)  # combo, flash_sale, bulk_discount, etc.
-    deal_details = Column(JSON, nullable=True)  # Additional deal information
+    deal_details = Column(JSON, nullable=True)  # Extra details about the deal
     last_updated = Column(DateTime, default=datetime.utcnow)
     
     # Relationships

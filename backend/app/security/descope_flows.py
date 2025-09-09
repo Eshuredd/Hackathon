@@ -9,7 +9,7 @@ class DescopeFlows:
     Descope Flows integration for user-facing consent and approval workflows.
     
     This implements the required Descope Flows for user consent management.
-    Note: This is a mock implementation since descope.flows is not available in the current SDK.
+    Currently using a placeholder since the full Descope flows SDK isn't set up yet.
     """
     
     def __init__(self):
@@ -37,7 +37,7 @@ class DescopeFlows:
                 detail="Descope flows are not configured"
             )
         try:
-            # Create a consent flow using Descope Flows
+            # Set up the consent flow for user data handling
             flow_data = {
                 "flow_id": f"consent_{consent_type}_{document_id}",
                 "user_id": user_id,
@@ -166,7 +166,7 @@ class DescopeFlows:
                 detail="Descope flows are not configured"
             )
         try:
-            # Create approval flow for delegation
+            # Set up approval workflow for delegation requests
             flow_data = {
                 "flow_id": f"approval_{approval_type}_{document_id}",
                 "user_id": user_id,

@@ -173,7 +173,7 @@ async def parse_and_add_to_cart(payload: dict, request: Request, user_id: str = 
     response["unavailable_items"] = unavailable_items
     response["unavailable_platforms"] = list(set(unavailable_platforms))
     
-    # Add information about successfully added items and available platforms
+    # Track which items were successfully added and what platforms are available
     added_items = []
     available_platforms = set()
     

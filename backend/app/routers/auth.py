@@ -43,10 +43,10 @@ class ConsentRequest(BaseModel):
 def sign_up(request: SignUpRequest, db: Session = Depends(get_db)):
     """Sign up a new user"""
     try:
-        # Create user in Descope
+        # Register the user with Descope
         auth_response = descope_auth.sign_up(request.email, request.password, request.name)
         
-        # Create local user record for audit purposes
+        # Keep a local record for tracking and audit logs
         local_user = User(
             email=request.email,
             password_hash="descope_managed",  # Password managed by Descope
@@ -98,7 +98,7 @@ def refresh_session(request: RefreshRequest):
 def sign_out(user: dict = Depends(get_current_user)):
     """Sign out current user"""
     try:
-        # Note: This would need the session token from the request
+        # In a real implementation, we'd validate the session token here
         # For now, we'll just return success
         return {"message": "Signed out successfully"}
     except Exception as e:
