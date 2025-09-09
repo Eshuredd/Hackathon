@@ -29,11 +29,20 @@ export function Dashboard() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorItems, setErrorItems] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [hideCartBar, setHideCartBar] = useState(false);
+  const [successClosing, setSuccessClosing] = useState(false);
+  const [errorClosing, setErrorClosing] = useState(false);
 
-  // Auto-close error popup after 4 seconds
+  // Auto-close error popup after 2 seconds with exit animation
   useEffect(() => {
     if (!showErrorPopup) return;
-    const t = setTimeout(() => setShowErrorPopup(false), 4000);
+    const t = setTimeout(() => {
+      setErrorClosing(true);
+      setTimeout(() => {
+        setShowErrorPopup(false);
+        setErrorClosing(false);
+      }, 300);
+    }, 2000);
     return () => clearTimeout(t);
   }, [showErrorPopup]);
   const { toast } = useToast();
@@ -104,10 +113,14 @@ export function Dashboard() {
         setAvailablePlatforms(platforms);
         setShowSuccessPopup(true);
 
-        // Auto-hide popup after 5 seconds
+        // Auto-hide popup after 2 seconds with exit animation
         setTimeout(() => {
-          setShowSuccessPopup(false);
-        }, 5000);
+          setSuccessClosing(true);
+          setTimeout(() => {
+            setShowSuccessPopup(false);
+            setSuccessClosing(false);
+          }, 300);
+        }, 2000);
       }
 
       setNlText("");
@@ -276,7 +289,13 @@ export function Dashboard() {
 
       {/* Success Popup */}
       {showSuccessPopup && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
+        <div
+          className={`fixed bottom-4 left-4 right-4 z-50 ${
+            successClosing
+              ? "animate-out slide-out-to-bottom-4 duration-300"
+              : "animate-in slide-in-from-bottom-4 duration-300"
+          }`}
+        >
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border p-4 max-w-md mx-auto">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -284,7 +303,13 @@ export function Dashboard() {
                 <h3 className="font-semibold text-lg">Items Added to Cart!</h3>
               </div>
               <button
-                onClick={() => setShowSuccessPopup(false)}
+                onClick={() => {
+                  setSuccessClosing(true);
+                  setTimeout(() => {
+                    setShowSuccessPopup(false);
+                    setSuccessClosing(false);
+                  }, 300);
+                }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -336,7 +361,13 @@ export function Dashboard() {
 
       {/* Error Popup */}
       {showErrorPopup && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
+        <div
+          className={`fixed bottom-4 left-4 right-4 z-50 ${
+            errorClosing
+              ? "animate-out slide-out-to-bottom-4 duration-300"
+              : "animate-in slide-in-from-bottom-4 duration-300"
+          }`}
+        >
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-red-500 p-4 max-w-md mx-auto">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -348,7 +379,13 @@ export function Dashboard() {
                 </h3>
               </div>
               <button
-                onClick={() => setShowErrorPopup(false)}
+                onClick={() => {
+                  setErrorClosing(true);
+                  setTimeout(() => {
+                    setShowErrorPopup(false);
+                    setErrorClosing(false);
+                  }, 300);
+                }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -382,7 +419,7 @@ export function Dashboard() {
       )}
 
       {/* Bottom cart bar */}
-      {cartCount > 0 && (
+      {cartCount > 0 && !hideCartBar && (
         <div className="fixed bottom-0 left-0 right-0 z-40 glass-strong border-t p-4">
           <div className="container mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -395,12 +432,21 @@ export function Dashboard() {
                 ₹{cartTotal.toFixed(2)}
               </span>
             </div>
-            <button
-              className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground cursor-pointer hover:opacity-90"
-              onClick={() => (window.location.href = "/cart")}
-            >
-              View Cart
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="px-6 py-3 text-base rounded-md bg-primary text-primary-foreground cursor-pointer hover:opacity-90"
+                onClick={() => (window.location.href = "/cart")}
+              >
+                View Cart
+              </button>
+              <button
+                aria-label="Close"
+                className="p-2 bg-transparent text-muted-foreground hover:text-foreground cursor-pointer"
+                onClick={() => setHideCartBar(true)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       )}
