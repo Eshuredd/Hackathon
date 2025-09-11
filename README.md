@@ -5,7 +5,7 @@ A multi-agent system that parses natural-language shopping requests, compares pr
 ## Team
 
 - Team name: Grocery Scout Team
-- Members: Alice Smith, Bob Lee, Carol Nguyen
+- Members: M.Sreekar, Kishor Reddy, Sharath Chennareddy
 
 ## Hackathon Theme / Challenge
 
